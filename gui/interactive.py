@@ -75,7 +75,6 @@ class DataFrame(SubFrame):
 
     def __init__(self, parent:InteractiveFrame):
         super().__init__(parent)
-        self.file_data = self.backend.file_data
         self.file_headers = self.backend.file_headers
 
         # axis comboboxes
@@ -91,7 +90,7 @@ class DataFrame(SubFrame):
         return
 
     def __call__(self):
-        super().__call__(side=tk.LEFT, fill=tk.X)
+        super().__call__(side=tk.RIGHT, fill=tk.X)
 
         for ax in self.axis_comboboxes:
             self.axis_comboboxes[ax].pack()
@@ -113,15 +112,17 @@ class DataFrame(SubFrame):
         return
 
     def plot_data(self, ax=1):
+        file_data = self.backend.file_data
+
         headers = {axis:self.axis_comboboxes[axis].get() for axis in self.axis_comboboxes}
-        if any([headers[key] not in self.file_data.columns for key in headers]): return
+        if any([headers[key] not in file_data.columns for key in headers]): return
 
         plot_line = PlotLine(
-            **{self.file_data[headers[axis]].to_numpy() for axis in headers},
-            label=f"{headers[0]} vs {headers[1]}"
+            **{axis:file_data[headers[axis]].to_numpy() for axis in headers},
+            label=f"{headers['x']} vs {headers['y']}"
         )
 
         self.backend.plot.plot_data(plot_line=plot_line, ax=ax)
-        self.backend.plot.update_plot(ax=ax)
+        self.backend.plot.update_plot(axes=[ax])
         self.parent.parent.plot_canvas.update_canvas()
         return

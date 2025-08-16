@@ -20,16 +20,21 @@ class Plot:
         self.axes[1].set_title("Plot")
         self.axes[1].set_xlabel("X")
         self.axes[1].set_ylabel("Y")
-        self.axes[1].legend()
+        self.axes[1].legend([], [])
         return
 
     def plot_data(self, plot_line:PlotLine, ax=1):
         self.axes[ax].plot(plot_line.x, plot_line.y, label=plot_line.label)
         return
 
-    def update_plot(self, ax=1):
+    def update_plot(self, axes=[1]):
+        for ax in axes:
+            self.update_axes(ax=ax)
+        self.figure.canvas.draw()
+        return
+
+    def update_axes(self, ax=1):
         self.axes[ax].relim()
         self.axes[ax].autoscale_view()
         self.axes[ax].legend_.legend_handles = [line.get_label() for line in self.axes[ax].lines]
-        self.figure.canvas.draw()
         return
